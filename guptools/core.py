@@ -32,6 +32,7 @@ class Structure(nx.DiGraph):
         # A few shortcuts.
         self.funcs = self.grammar.funcs
         self.product = self.grammar.polarity_system.product
+        self.polarity_system = self.grammar.polarity_system
 
         super().__init__()
         for n, obj in objects.items():
@@ -59,10 +60,9 @@ class Structure(nx.DiGraph):
         key_by_object = {obj: n for n, obj in new_objects.items()}
 
         for obj in new_objects.values():
-            for func in obj:
-                if func in self.funcs.structuring:
-                    copy = mapping[fwtab[obj[func]]]
-                    obj[func] = key_by_object[copy]
+            for func in set(obj) & set(self.funcs.structuring):
+                copy = mapping[fwtab[obj[func]]]
+                obj[func] = key_by_object[copy]
 
         return Structure(new_objects, self.grammar)
 
@@ -98,6 +98,15 @@ class Structure(nx.DiGraph):
 
     def __add__(self, other):
         return self.combine(other)
+
+    @property
+    def neutral(self):
+        for obj in self.node.values():
+            for func in set(obj) & set(self.funcs.polarizing):
+                if obj[func] not in self.polarity_system.N:
+                    return False
+        else:
+            return True
 
 
 class Object(dict):

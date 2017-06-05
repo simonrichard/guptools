@@ -30,3 +30,7 @@ class TestStructure:
         # value pair is different.
         S3.node["N3"]["label"] = "cat"
         assert S1 != S3
+
+    def test__is_neutral(self):
+        assert S1.neutral is True
+        assert S2.neutral is False
