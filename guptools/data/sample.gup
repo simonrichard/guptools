@@ -1,0 +1,22 @@
+structuring { source target }
+polarizing { polarity }
+labeling { type label }
+
+polarities { white black }
+neutral { black }
+product_table {
+    ( white white white )
+    ( white black black )
+}
+
+S1 {
+    N1 { type=node, polarity=black, label=sleep }
+    E1 { type=edge, polarity=black, label=1, source=N1, target=N2 }
+    N2 { type=node, polarity=black, label=dog }
+}
+
+S2 {
+    N1 { type=node, polarity=black, label=small }
+    E1 { type=edge, polarity=black, label=1, source=N1, target=N2 }
+    N2 { type=node, polarity=white }
+}
