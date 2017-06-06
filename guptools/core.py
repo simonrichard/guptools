@@ -3,6 +3,7 @@ import networkx.algorithms.isomorphism as iso
 
 from collections import defaultdict, ChainMap
 from itertools import chain, filterfalse, repeat
+from nltk.featstruct import FeatStruct as AVM
 
 from . import stacks
 from .gupparser import import_grammar
@@ -99,8 +100,22 @@ class Structure(nx.DiGraph):
     def __add__(self, other):
         return self.combine(other)
 
+    def to_dict(self):
+        _dict = {}
+        key_by_object = {obj: n for n, obj in self.nodes(True)}
+        for n, obj in self.nodes(True):
+            _dict[n] = {func: key_by_object.get(value, value) for func, value in obj.items()}
+        return _dict
+
+    def __repr__(self):
+        return "Structure(%s)" % self.to_dict()
+
+    def __str__(self):
+        """Return the structure as an attribute-value matrix."""
+        return str(AVM({n: AVM(obj) for n, obj in self.to_dict().items()}))
+
     @property
-    def neutral(self):
+    def is_neutral(self):
         for obj in self.node.values():
             for func in set(obj) & set(self.funcs.polarizing):
                 if obj[func] not in self.polarity_system.N:

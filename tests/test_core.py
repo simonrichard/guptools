@@ -1,7 +1,7 @@
 import networkx as nx
 
 from guptools import SAMPLE_GRAMMAR
-from guptools.core import Grammar, Object
+from guptools.core import Grammar, Structure, Object
 
 G1 = Grammar._import(SAMPLE_GRAMMAR)
 S1 = G1.structs["S1"]
@@ -32,5 +32,16 @@ class TestStructure:
         assert S1 != S3
 
     def test__is_neutral(self):
-        assert S1.neutral is True
-        assert S2.neutral is False
+        assert S1.is_neutral is True
+        assert S2.is_neutral is False
+
+    def test__to_dict(self):
+        objects = {
+            "eat": {"type": "semnode", "label": "eat", "polarity": "black"},
+            "N1": {"type": "semnode", "polarity": "white"},
+            "N2": {"type": "semnode", "polarity": "white"},
+            "E1": {"type": "semedge", "label": "1", "source": "eat", "target": "N1", "polarity": "black"},
+            "E2": {"type": "semedge", "label": "2", "source": "eat", "target": "N2", "polarity": "black"}
+        }
+        S3 = Structure(objects, G1)
+        assert S3.to_dict() == objects
