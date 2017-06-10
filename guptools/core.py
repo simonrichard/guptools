@@ -1,14 +1,14 @@
 import networkx as nx
 import networkx.algorithms.isomorphism as iso
 
-from collections import defaultdict, ChainMap
+from collections import ChainMap
 from itertools import chain, filterfalse, repeat
 from nltk.featstruct import FeatStruct as AVM
 
 from . import stacks
 from .gupparser import import_grammar
 from .polarities import PolaritySystem
-from .utils import Forward
+from .utils import Complement, Forward
 
 
 class Grammar:
@@ -70,7 +70,7 @@ class Structure(nx.DiGraph):
     def combine(self, other):
         structures = []
         forward = Forward()
-        compl = defaultdict(dict)
+        compl = Complement()
 
         for stack in stacks.generate(self, other):
             while stack:
