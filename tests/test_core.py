@@ -2,6 +2,7 @@ import networkx as nx
 
 from guptools import SAMPLE_GRAMMAR
 from guptools.core import Grammar, Structure, Object
+from guptools.utils import Complement
 
 G1 = Grammar._import(SAMPLE_GRAMMAR)
 S1 = G1.structs["S1"]
@@ -37,11 +38,48 @@ class TestStructure:
 
     def test__to_dict(self):
         objects = {
-            "eat": {"type": "semnode", "label": "eat", "polarity": "black"},
-            "N1": {"type": "semnode", "polarity": "white"},
-            "N2": {"type": "semnode", "polarity": "white"},
-            "E1": {"type": "semedge", "label": "1", "source": "eat", "target": "N1", "polarity": "black"},
-            "E2": {"type": "semedge", "label": "2", "source": "eat", "target": "N2", "polarity": "black"}
+            "N1": {"type": "node", "label": "eat", "polarity": "black"},
+            "N2": {"type": "node", "polarity": "white"},
+            "N3": {"type": "node", "polarity": "white"},
+            "E1": {"type": "edge", "label": "1", "source": "N1", "target": "N2", "polarity": "black"},
+            "E2": {"type": "edge", "label": "2", "source": "N1", "target": "N3", "polarity": "black"}
         }
         S3 = Structure(objects, G1)
         assert S3.to_dict() == objects
+
+
+class TestObject:
+
+    def test_intersection(self):
+        O1 = S1.node["N1"]
+        O2 = S2.node["E1"]
+        inter = Object.intersection(O1, O2, Complement())
+        expected = [
+            ("type", "node", "edge"),
+            ("label", "sleep", "1"),
+            ("polarity", "black", "black")
+        ]
+        assert set(inter) == set(expected)
+
+        # The function-value pairs in compl should have priority
+        # over the contents of an object.
+        compl = Complement()
+        compl[O2]["label"] = "2"
+        inter = Object.intersection(O1, O2, compl)
+        expected[1] = ("label", "sleep", "2")
+        assert set(inter) == set(expected)
+
+    def test_difference(self):
+        O1 = S1.node["N1"]
+        O2 = S2.node["N2"]
+        diff = Object.difference(O1, O2, Complement())
+        expected = [
+            ("label", "sleep")
+        ]
+        assert set(diff) == set(expected)
+
+        # The function-value pairs in compl should have priority
+        # over the contents of an object.
+        compl = Complement()
+        compl[O2]["label"] = "dog"
+        assert set(Object.difference(O1, O2, compl)) == set()
