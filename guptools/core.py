@@ -123,6 +123,9 @@ class Structure(nx.DiGraph):
         else:
             return True
 
+    def rename(self, mapping):
+        nx.relabel_nodes(self, mapping, copy=False)
+
 
 class Object(dict):
 
