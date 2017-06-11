@@ -1,4 +1,5 @@
 networkx
+nltk
 pyparsing
 
 https://api.github.com/repos/python-constraint/python-constraint/tarball#egg=python-constraint-1.3
