@@ -6,7 +6,7 @@ pip.main(["install", "-r", "requirements.txt"])
 
 setup(
     name="guptools",
-    version="1.2.0",
+    version="1.3.0",
     author="Simon Richard",
     author_email="simon.richard@umontreal.ca",
     packages=find_packages(),

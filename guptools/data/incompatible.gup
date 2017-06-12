@@ -1,0 +1,14 @@
+structuring { source target }
+polarizing { polarity }
+labeling { objtype label }
+
+polarities { white black }
+neutral { black }
+product_table {
+    ( white white white )
+    ( white black black )
+}
+
+S1 {
+    N1 { objtype=node, polarity=black, label=dog }
+}
