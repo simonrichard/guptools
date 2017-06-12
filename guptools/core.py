@@ -6,6 +6,7 @@ from itertools import chain, filterfalse, repeat
 from nltk.featstruct import FeatStruct as AVM
 
 from . import stacks
+from .exceptions import GrammarCompatibilityError
 from .gupparser import import_grammar
 from .polarities import PolaritySystem
 from .utils import Complement, Forward
@@ -23,6 +24,12 @@ class Grammar:
     @classmethod
     def _import(cls, path):
         return Grammar(*import_grammar(path))
+
+    def __eq__(self, other):
+        return (
+            self.funcs == other.funcs and
+            self.polarity_system == other.polarity_system
+        )
 
 
 class Structure(nx.DiGraph):
@@ -68,6 +75,11 @@ class Structure(nx.DiGraph):
         return Structure(new_objects, self.grammar)
 
     def combine(self, other):
+        if self.grammar != other.grammar:
+            raise GrammarCompatibilityError(
+                "The structures have incompatible grammars"
+            )
+
         structures = []
         forward = Forward()
         compl = Complement()

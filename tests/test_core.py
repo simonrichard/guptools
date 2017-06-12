@@ -1,12 +1,18 @@
 import networkx as nx
+import pytest
+
+from os.path import dirname, join
 
 from guptools import SAMPLE_GRAMMAR
 from guptools.core import Grammar, Structure, Object
+from guptools.exceptions import GrammarCompatibilityError
 from guptools.utils import Complement
 
 G1 = Grammar._import(SAMPLE_GRAMMAR)
 S1 = G1.structs["S1"]
 S2 = G1.structs["S2"]
+
+G2 = Grammar._import(join(dirname(SAMPLE_GRAMMAR), "incompatible.gup"))
 
 
 class TestStructure:
@@ -46,6 +52,18 @@ class TestStructure:
         }
         S3 = Structure(objects, G1)
         assert S3.to_dict() == objects
+
+    def test_combine_with_incompatible_grammars(self):
+        # An exception should be raised if the structures have incompatible grammars.
+        with pytest.raises(GrammarCompatibilityError):
+            S1 + G2.structs["S1"]
+
+    def test_combine_with_compatible_grammars(self):
+        G2.funcs = G2.funcs._replace(labeling=G1.funcs.labeling)
+        try:
+            S1 + S2  # S1 and S2 have compatible grammars.
+        except GrammarCompatibilityError:
+            pytest.fail("No exception should be raised for structures with compatible grammars")
 
 
 class TestObject:

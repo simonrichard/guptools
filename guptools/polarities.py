@@ -61,3 +61,10 @@ class PolaritySystem:
                 prob.addConstraint(sum_eq, (p1, p2, self.table[p1][p2]))
 
         return prob.getSolution()
+
+    def __eq__(self, other):
+        return (
+            set(self.P) == set(other.P) and
+            set(self.N) == set(other.N) and
+            self.table == other.table
+        )
